@@ -12,6 +12,7 @@ form{display:grid;gap:1rem;max-width:520px}input,select{width:100%;padding:.7rem
 .filters{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}.chip{padding:.5rem 1rem;border-radius:999px;border:2px solid var(--ink);background:var(--white);cursor:pointer;font-weight:700}.chip.active{background:var(--sage);color:#fff;border-color:var(--sage)}
 .marquee{overflow:hidden;white-space:nowrap;background:var(--sage);color:#fff;padding:.6rem 0;font-weight:700}.marquee span{display:inline-block;animation:scroll 22s linear infinite}@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .card{transition:transform .2s ease}.card:hover{transform:translateY(-3px)}
+.reveal-init{opacity:.25;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}.reveal-init.in-view{opacity:1;transform:none}
 footer{text-align:center;padding:2rem;color:var(--muted)}
 .reveal{opacity:1}
 @media(max-width:640px){.topbar nav{display:none}}

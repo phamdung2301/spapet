@@ -53,6 +53,15 @@
       return "<option value='" + s.id + "'>" + s.name + " — " + money(s.price) + "</option>";
     }).join("");
   }
+  // Scroll reveal, JS-gated only: content stays visible if JS or observer is unavailable.
+  if ("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in-view"); observer.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    document.querySelectorAll("section").forEach(function (sec) { sec.classList.add("reveal-init"); observer.observe(sec); });
+    // Safety: reveal everything after 3s even if observer stalls.
+    setTimeout(function () { document.querySelectorAll(".reveal-init").forEach(function (el) { el.classList.add("in-view"); }); }, 3000);
+  }
   var form = document.getElementById("booking-form");
   if (form) {
     form.addEventListener("submit", function (e) {
