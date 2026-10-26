@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paw &amp; Bubbles — Spa &amp; Grooming cho thú cưng</title>
+<meta name="description" content="Concept website: spa, tắm, cắt tỉa cho chó mèo. Dữ liệu và form đặt lịch chỉ là demo.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="logo" href="#">🐾 Paw &amp; Bubbles</a>
+  <nav aria-label="Chính">
+    <a href="#services">Dịch vụ</a>
+    <a href="#calculator">Bảng giá</a>
+    <a href="#process">Quy trình</a>
+    <a href="#team">Groomer</a>
+    <a href="#booking">Đặt lịch</a>
+  </nav>
+  <a class="btn btn-primary" href="#booking">Đặt lịch demo</a>
+</header>
+<main>
+  <section class="hero" id="top">
+    <p class="eyebrow">PET SPA &amp; GROOMING — TP. HỒ CHÍ MINH</p>
+    <h1>Thú cưng sạch thơm,<br>chủ an tâm.</h1>
+    <p class="lede">Tắm, cắt tỉa, spa thư giãn cho chó mèo — nhẹ nhàng, không gây stress, theo dõi từng bước.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#services">Xem dịch vụ</a>
+      <a class="btn btn-ghost" href="#calculator">Tính giá nhanh</a>
+    </div>
+    <p class="demo-note">Concept demo — giá và lịch trình dưới đây là dữ liệu minh họa, chưa phải đặt lịch thật.</p>
+  </section>
+  <section id="services"><h2>Dịch vụ</h2><div id="service-list" class="grid"></div></section>
+  <section id="calculator"><h2>Bảng giá &amp; tính giá nhanh</h2><div id="calculator-box"></div></section>
+  <section id="process"><h2>Quy trình 4 bước</h2><ol class="steps"><li>Kiểm tra sức khỏe &amp; lông</li><li>Tắm &amp; massage thư giãn</li><li>Cắt tỉa theo yêu cầu</li><li>Sấy, chải &amp; kiểm tra cuối</li></ol></section>
+  <section id="team"><h2>Groomer</h2><div id="team-list" class="grid"></div></section>
+  <section id="testimonials"><h2>Khách nói gì</h2><div id="testimonial-list" class="grid"></div></section>
+  <section id="booking"><h2>Đặt lịch (demo)</h2><form id="booking-form"><label>Tên thú cưng <input name="pet" required></label><label>Dịch vụ <select name="service" id="booking-service"></select></label><label>Ngày <input type="date" name="date" required></label><button class="btn btn-primary" type="submit">Lưu demo vào trình duyệt</button><p class="demo-note">Demo: chỉ lưu ở trình duyệt của bạn, không gửi đi đâu và không giữ chỗ thật.</p><p id="booking-result" role="status"></p></form></section>
+  <section id="faq"><h2>Câu hỏi thường gặp</h2><details open><summary>Thú cưng sợ nước thì sao?</summary><p>Groomer làm quen từ từ, tắm nước ấm, dừng nghỉ khi cần. Nếu bé quá stress, chúng tôi dừng và hẹn lại.</p></details><details><summary>Có cần tiêm phòng không?</summary><p>Nên có sổ tiêm cơ bản để bảo vệ các bé khác trong spa.</p></details></section>
+</main>
+<footer><p>🐾 Paw &amp; Bubbles — Concept demo · SPAPET v1.0 — 2026-10-26 · Giá, lịch và đánh giá là dữ liệu minh họa.</p></footer>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
