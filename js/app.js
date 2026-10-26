@@ -32,9 +32,20 @@
       return "<article class='card'><p>“" + t.text + "”</p><p><strong>" + t.name + "</strong></p></article>";
     }).join("");
   }
-  var calc = document.getElementById("calculator-box");
-  if (calc) {
-    calc.innerHTML = "<p>Chọn dịch vụ ở form đặt lịch để xem giá tham khảo. Bảng giá đầy đủ sẽ có ở commit tiếp theo.</p>";
+  var calcService = document.getElementById("calc-service");
+  var calcSize = document.getElementById("calc-size");
+  var calcResult = document.getElementById("calc-result");
+  function updateCalc() {
+    if (!calcService || !calcResult) return;
+    var svc = data.services.find(function (s) { return s.id === calcService.value; }) || data.services[0];
+    var mult = parseFloat(calcSize ? calcSize.value : "1");
+    if (svc) calcResult.textContent = svc.name + ": " + money(Math.round(svc.price * mult)) + " (giá gốc " + money(svc.price) + " × " + mult + ")";
+  }
+  if (calcService) {
+    calcService.innerHTML = data.services.map(function (s) { return "<option value='" + s.id + "'>" + s.name + "</option>"; }).join("");
+    calcService.addEventListener("change", updateCalc);
+    if (calcSize) calcSize.addEventListener("change", updateCalc);
+    updateCalc();
   }
   var sel = document.getElementById("booking-service");
   if (sel) {
