@@ -9,6 +9,9 @@ main{max-width:1080px;margin:0 auto;padding:0 1.25rem 3rem}section{padding:3rem 
 .card h3{margin-top:0}.price{font-weight:800;color:#b4532a}.demo-note{color:var(--muted);font-size:.9rem}
 form{display:grid;gap:1rem;max-width:520px}input,select{width:100%;padding:.7rem;border:1px solid #ccc;border-radius:12px;margin-top:.25rem}
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;padding-left:0;list-style:none}.steps li{background:var(--white);border-radius:20px;padding:1.25rem;border:1px solid #eadfd6}
+.filters{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}.chip{padding:.5rem 1rem;border-radius:999px;border:2px solid var(--ink);background:var(--white);cursor:pointer;font-weight:700}.chip.active{background:var(--sage);color:#fff;border-color:var(--sage)}
+.marquee{overflow:hidden;white-space:nowrap;background:var(--sage);color:#fff;padding:.6rem 0;font-weight:700}.marquee span{display:inline-block;animation:scroll 22s linear infinite}@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.card{transition:transform .2s ease}.card:hover{transform:translateY(-3px)}
 footer{text-align:center;padding:2rem;color:var(--muted)}
 .reveal{opacity:1}
 @media(max-width:640px){.topbar nav{display:none}}

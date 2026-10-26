@@ -2,11 +2,24 @@
   var data = window.SPAPET_DATA || { services: [], team: [], testimonials: [] };
   function money(n) { return n.toLocaleString("vi-VN") + " đ"; }
   var list = document.getElementById("service-list");
-  if (list) {
-    list.innerHTML = data.services.map(function (s) {
-      return "<article class='card'><h3>" + s.name + "</h3><p>" + s.desc + "</p><p class='price'>Từ " + money(s.price) + "</p></article>";
-    }).join("");
+  var countEl = document.getElementById("service-count");
+  function renderServices(pet) {
+    var shown = data.services.filter(function (s) { return pet === "all" || s.pet.split(",").indexOf(pet) !== -1; });
+    if (list) {
+      list.innerHTML = shown.map(function (s) {
+        return "<article class='card reveal'><h3>" + s.name + "</h3><p>" + s.desc + "</p><p class='price'>Từ " + money(s.price) + "</p><p class='demo-note'>Phù hợp: " + (s.pet === "dog,cat" ? "Chó &amp; mèo" : (s.pet === "dog" ? "Chó" : "Mèo")) + "</p></article>";
+      }).join("");
+    }
+    if (countEl) countEl.textContent = "Đang hiển thị " + shown.length + " / " + data.services.length + " dịch vụ.";
   }
+  renderServices("all");
+  document.querySelectorAll(".filters .chip").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".filters .chip").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      renderServices(btn.getAttribute("data-pet"));
+    });
+  });
   var team = document.getElementById("team-list");
   if (team) {
     team.innerHTML = data.team.map(function (t) {
