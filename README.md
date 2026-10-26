@@ -1,17 +1,9 @@
-# Paw & Bubbles — Pet Spa & Grooming (Concept)
+# Paw & Bubbles — Pet Spa & Grooming (v2.0)
 
-A static concept website for a fictional pet spa in Ho Chi Minh City.
+React + Vite + TypeScript + Three.js (React Three Fiber) + Framer Motion.
 
-- **Stack:** plain HTML + CSS + vanilla JavaScript. No build step, no backend, no database.
-- **Run locally:** open `index.html` in a browser, or serve the folder with any static server.
-- **Deploy:** GitHub Pages from the `main` branch root — `index.html` is the entry point.
-- **Data:** services, groomers and testimonials live in `js/data.js` (fictional concept data).
-- **Booking form:** a demo only. It saves to the visitor's own browser (`localStorage`) and does not create a real booking, send email, or contact the spa. This is stated in the UI next to the form.
-- **Version:** SPAPET v1.0 — Concept demo, 2026-10-26.
-
-## Structure
-
-- `index.html` — page structure and sections
-- `css/style.css` — theme tokens, layout, motion
-- `js/data.js` — fictional catalog data
-- `js/app.js` — rendering, filters, calculator, booking demo, reveal
+- **Run locally:** `npm install` then `npm run dev` (or `npm run build` + `npm run preview`).
+- **Deploy:** Vercel — import this repo, build command `npm run build`, output `dist`. GitHub Pages from the repo root does NOT serve Vite source directly.
+- **Data:** fictional concept data in `src/data.ts`.
+- **Booking form:** a demo only. It saves to the visitor's own browser (`localStorage`) and does not create a real booking.
+- **Version:** SPAPET v2.0 — 2026-10-26.
