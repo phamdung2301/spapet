@@ -67,6 +67,12 @@
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var fd = new FormData(form);
+      var out0 = document.getElementById("booking-result");
+      if (fd.get("date")) {
+        var today = new Date(); today.setHours(0, 0, 0, 0);
+        var chosen = new Date(fd.get("date") + "T00:00:00");
+        if (chosen < today) { if (out0) out0.textContent = "Ngày đã qua — vui lòng chọn ngày từ hôm nay trở đi (demo)."; return; }
+      }
       var booking = { pet: fd.get("pet"), service: fd.get("service"), date: fd.get("date"), savedAt: new Date().toISOString() };
       try { localStorage.setItem("spapet-demo-booking", JSON.stringify(booking)); } catch (err) {}
       var out = document.getElementById("booking-result");

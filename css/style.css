@@ -15,5 +15,6 @@ form{display:grid;gap:1rem;max-width:520px}input,select{width:100%;padding:.7rem
 .reveal-init{opacity:.25;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}.reveal-init.in-view{opacity:1;transform:none}
 footer{text-align:center;padding:2rem;color:var(--muted)}
 .reveal{opacity:1}
-@media(max-width:640px){.topbar nav{display:none}}
+.paw-art{font-size:2rem;letter-spacing:.3rem;margin-top:1.5rem}
+@media(max-width:640px){.topbar nav{display:none}.hero-actions{display:flex;flex-wrap:wrap;gap:.75rem}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
