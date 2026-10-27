@@ -9,6 +9,8 @@ interface StageProps {
   coat: Coat;
   perfumeOn: boolean;
   paused: boolean;
+  /** 0..1 scroll progress through the stage+process zone: scrubs the rig rotation. */
+  scrollT?: number;
 }
 
 /** Deterministic bubble seeds so the stage is stable between renders. */
@@ -223,7 +225,7 @@ function Sparkles({ visible, paused, perfumeOn }: { visible: boolean; paused: bo
   );
 }
 
-function Station({ step, pet, coat, perfumeOn, paused }: StageProps) {
+function Station({ step, pet, coat, perfumeOn, paused, scrollT = 0 }: StageProps) {
   const rig = useRef<THREE.Group>(null);
   const petRef = useRef<THREE.Group>(null);
   const target = useMemo(() => new THREE.Vector3(), []);
@@ -231,12 +233,22 @@ function Station({ step, pet, coat, perfumeOn, paused }: StageProps) {
 
   useFrame((state, delta) => {
     if (paused) return;
+    // Assembly intro (v3.1): the whole station flies in from below and
+    // settles over the first ~1.4s, instead of appearing at once.
+    const raw = Math.min(1, state.clock.elapsedTime / 1.4);
+    const ease = raw * raw * (3 - 2 * raw);
+    if (rig.current) {
+      rig.current.position.y = (1 - ease) * -1.4;
+      rig.current.scale.setScalar(0.88 + 0.12 * ease);
+    }
     // Cursor-lerp: never snap, always ease toward the cursor.
     const nx = (state.pointer.x || 0) * 0.22;
     const ny = (state.pointer.y || 0) * 0.12;
     cursor.current.x += (nx - cursor.current.x) * Math.min(1, delta * 3);
     cursor.current.y += (ny - cursor.current.y) * Math.min(1, delta * 3);
-    if (rig.current) rig.current.rotation.y = cursor.current.x;
+    // Scroll-scrub (v3.1): scrolling the stage+process zone rotates the
+    // rig on top of the cursor-lerp, so scroll visibly drives the 3D.
+    if (rig.current) rig.current.rotation.y = cursor.current.x + scrollT * 0.9;
     if (rig.current) rig.current.rotation.x = cursor.current.y * 0.4;
     // Pet walks (lerps) between tub and table as the step changes.
     if (petRef.current) {
