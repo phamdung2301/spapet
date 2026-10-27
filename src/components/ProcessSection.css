@@ -1,0 +1,20 @@
+.process-section { background: var(--sage); color: #fff; padding: 64px 28px; margin-top: 20px; border-radius: 18px; }
+.process-section .eyebrow { color: #fff; }
+.step-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0; }
+.step-tabs button {
+  border: 1px solid rgba(255, 255, 255, 0.5); background: transparent; color: #fff;
+  border-radius: 999px; padding: 9px 16px; font-weight: 600; transition: transform 0.2s ease, background 0.2s ease;
+}
+.step-tabs button:hover { transform: translateY(-2px); }
+.step-tabs button.active { background: #fff; color: var(--sage-dark); }
+.process-meter { height: 6px; background: rgba(255, 255, 255, 0.25); border-radius: 999px; overflow: hidden; margin-bottom: 20px; }
+.process-meter span { display: block; height: 100%; background: #fff; transition: width 0.35s ease; }
+.process-detail {
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 28px;
+  background: rgba(255, 255, 255, 0.14); border-radius: 16px; padding: 24px;
+}
+.process-facts p { display: flex; flex-direction: column; margin: 0 0 14px; }
+.process-facts span { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.8; }
+@media (max-width: 980px) {
+  .process-detail { grid-template-columns: 1fr; }
+}
