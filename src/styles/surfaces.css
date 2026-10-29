@@ -1,0 +1,111 @@
+/* ============================================================
+   Paw & Bubbles — shared surface system (v3.2, UI-05)
+   .surface        gradient-hairline card skin (light rooms)
+   .surface--dark  same recipe for ink rooms
+   .glow           pointer-following peach sheen — drive --mx/--my
+                   from common.tsx handleGlow
+   .cta            dimensional peach button with one-shot shine
+   Notes: elements that are framer-motion animated own their
+   transform (whileHover/whileTap) — never add CSS transform
+   transitions on those, only box-shadow/border/background.
+   ============================================================ */
+
+.surface {
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: var(--radius-card);
+  background:
+    linear-gradient(180deg, #fffdf9, #fff6ea) padding-box,
+    linear-gradient(135deg, rgba(232, 143, 116, 0.55), rgba(127, 168, 147, 0.4) 55%, rgba(43, 38, 32, 0.12)) border-box;
+  box-shadow: var(--shadow-1);
+}
+.surface--dark {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.04)) padding-box,
+    linear-gradient(135deg, rgba(255, 181, 158, 0.35), rgba(127, 168, 147, 0.22) 55%, rgba(255, 255, 255, 0.08)) border-box;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* Pointer sheen — driver lives in common.tsx (handleGlow) */
+.glow {
+  overflow: hidden;
+}
+.glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 181, 158, 0.22),
+    transparent 65%
+  );
+}
+.surface--dark.glow::before {
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 181, 158, 0.16),
+    transparent 65%
+  );
+}
+.glow:hover::before,
+.glow:focus-within::before {
+  opacity: 1;
+}
+
+/* --- Primary CTA: dimensional peach + shine sweep (UI-05) --- */
+.cta {
+  display: inline-block;
+  background: linear-gradient(180deg, #ffc7b3, var(--peach) 45%, #f2a184);
+  color: var(--ink);
+  border: none;
+  border-radius: 999px;
+  padding: 12px 22px;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 1px 2px rgba(63, 42, 20, 0.15),
+    0 10px 24px rgba(232, 143, 116, 0.35);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s ease;
+}
+.cta:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 2px 4px rgba(63, 42, 20, 0.18),
+    0 14px 30px rgba(232, 143, 116, 0.45);
+}
+.cta:active {
+  transform: translateY(0) scale(0.97);
+}
+.cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform: translateX(-130%) skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transition: transform 0.7s var(--ease-out);
+}
+.cta:hover::after {
+  transform: translateX(130%) skewX(-18deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta,
+  .cta:hover,
+  .cta:active {
+    transform: none;
+    transition: none;
+  }
+  .cta::after {
+    display: none;
+  }
+  .glow::before {
+    transition: none;
+  }
+}

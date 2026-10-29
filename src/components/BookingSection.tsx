@@ -1,8 +1,17 @@
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { GROOMERS, TIME_SLOTS, formatK, isSlotFull } from "../data";
 import type { Booking } from "../data";
-import { MaskedHeading, Reveal, RollLabel, TechLabel } from "./common";
+import {
+  AnimatedNumber,
+  MaskedHeading,
+  Reveal,
+  RollLabel,
+  TechLabel,
+  fadeUpItem,
+  handleGlow,
+  staggerContainer,
+} from "./common";
 import "./BookingSection.css";
 
 interface Calc {
@@ -42,6 +51,7 @@ export default function BookingSection(props: Props) {
   const [error, setError] = useState("");
   const [lastBooking, setLastBooking] = useState<Booking | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const reduced = useReducedMotion() ?? false;
 
   const saveBooking = () => {
     if (!petName.trim() || !slot) {
@@ -71,7 +81,7 @@ export default function BookingSection(props: Props) {
   };
 
   return (
-    <section id="booking" className="booking-section">
+    <section id="booking" className="booking-section room section-pad">
       <Reveal>
         <TechLabel>04 · Groomer + slot booking · Heatmap, calendar grid, confirmation sheet</TechLabel>
         <h2>
@@ -79,52 +89,67 @@ export default function BookingSection(props: Props) {
             lines={[{ text: "Pick a person," }, { text: "then a time that is actually free", em: true }]}
           />
         </h2>
-        <div className="groomer-grid">
-          {GROOMERS.map((g) => (
-            <article key={g.id} className={`groomer-card ${groomerId === g.id ? "active" : ""}`}>
-              <button
-                className="groomer-card-main"
-                onClick={() => {
-                  setGroomerId(g.id);
-                  setSlot(null);
-                }}
-                aria-pressed={groomerId === g.id}
-              >
-                <span className="avatar">{g.name.split(" ").map((w) => w[0]).join("")}</span>
-                <span className="groomer-main">
-                  <strong>{g.name}</strong>
-                  <small>{g.specialty} · {g.years} years · ★ {g.rating}</small>
-                  <small>{g.note}</small>
-                </span>
-                <span className="groomer-check">{groomerId === g.id ? "Selected" : "Select"}</span>
-              </button>
-              <div className="heatmap" aria-label={`Availability for ${g.name} over the next 7 days`}>
-                <span className="heatmap-label">Next 7 days</span>
-                <div className="heatmap-cells">
-                  {days.map((d, di) => {
-                    const avail = groomerDayAvailable(g.id, di);
-                    return (
-                      <button
-                        key={d.iso}
-                        className={`heat-cell ${avail ? "avail" : "full"} ${groomerId === g.id && dayIndex === di ? "chosen" : ""}`}
-                        title={`${d.label}: ${avail ? "slots available" : "no free slots"}`}
-                        onClick={() => {
-                          setGroomerId(g.id);
-                          setDayIndex(di);
-                          setSlot(null);
-                        }}
-                      >
-                        {avail ? "●" : "×"}
-                      </button>
-                    );
-                  })}
-                </div>
-                <small className="heatmap-legend">● has a free slot · × none free — click a day to jump to it</small>
-              </div>
-            </article>
-          ))}
-        </div>
+      </Reveal>
 
+      <motion.div
+        className="groomer-grid"
+        variants={staggerContainer}
+        initial={reduced ? false : "hidden"}
+        whileInView="show"
+        viewport={{ once: true, margin: "-60px" }}
+      >
+        {GROOMERS.map((g) => (
+          <motion.article
+            key={g.id}
+            variants={fadeUpItem}
+            whileHover={reduced ? undefined : { y: -4 }}
+            className={`groomer-card surface glow ${groomerId === g.id ? "active" : ""}`}
+            onPointerMove={handleGlow}
+          >
+            <button
+              className="groomer-card-main"
+              onClick={() => {
+                setGroomerId(g.id);
+                setSlot(null);
+              }}
+              aria-pressed={groomerId === g.id}
+            >
+              <span className="avatar">{g.name.split(" ").map((w) => w[0]).join("")}</span>
+              <span className="groomer-main">
+                <strong>{g.name}</strong>
+                <small>{g.specialty} · {g.years} years · ★ {g.rating}</small>
+                <small>{g.note}</small>
+              </span>
+              <span className="groomer-check">{groomerId === g.id ? "Selected" : "Select"}</span>
+            </button>
+            <div className="heatmap" aria-label={`Availability for ${g.name} over the next 7 days`}>
+              <span className="heatmap-label">Next 7 days</span>
+              <div className="heatmap-cells">
+                {days.map((d, di) => {
+                  const avail = groomerDayAvailable(g.id, di);
+                  return (
+                    <button
+                      key={d.iso}
+                      className={`heat-cell ${avail ? "avail" : "full"} ${groomerId === g.id && dayIndex === di ? "chosen" : ""}`}
+                      title={`${d.label}: ${avail ? "slots available" : "no free slots"}`}
+                      onClick={() => {
+                        setGroomerId(g.id);
+                        setDayIndex(di);
+                        setSlot(null);
+                      }}
+                    >
+                      {avail ? "●" : "×"}
+                    </button>
+                  );
+                })}
+              </div>
+              <small className="heatmap-legend">● has a free slot · × none free — click a day to jump to it</small>
+            </div>
+          </motion.article>
+        ))}
+      </motion.div>
+
+      <Reveal delay={0.05}>
         <p className="field-label">Calendar — days across, times down the grid</p>
         <div className="calendar-grid" role="grid" aria-label="Booking calendar">
           <div className="cal-head-row">
@@ -184,7 +209,7 @@ export default function BookingSection(props: Props) {
             <p className="mono">{calc.code}</p>
             <p>
               {groomer.name} · {days[dayIndex].label} {slot ? `at ${slot}` : "— pick a time"} ·{" "}
-              {formatK(calc.priceK)} · {calc.minutes} min
+              <AnimatedNumber value={calc.priceK} suffix="k VND" /> · {calc.minutes} min
             </p>
             <p className="owner-line">{ownerName ? `For ${ownerName}` : "Owner name optional"}</p>
           </div>
@@ -193,52 +218,71 @@ export default function BookingSection(props: Props) {
           </button>
           {error && <p className="booking-error">{error}</p>}
         </div>
-
-        <AnimatePresence>
-          {sheetOpen && lastBooking && (
-            <motion.div
-              className="confirm-sheet"
-              initial={{ y: -24, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -24, opacity: 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              role="status"
-            >
-              <p className="tech-label">Booking saved · Demo only, in this browser</p>
-              <h3>
-                {lastBooking.petName} is booked ✓
-              </h3>
-              <p>
-                {lastBooking.groomerName} · {lastBooking.dateLabel} at {lastBooking.time} ·{" "}
-                {lastBooking.code} · {formatK(lastBooking.priceK)} · {lastBooking.minutes} min
-              </p>
-              <button className="text-btn" onClick={() => setSheetOpen(false)}>
-                Dismiss
-              </button>
-              <a className="text-btn" href="#booking">
-                Book another
-              </a>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <h3>My bookings</h3>
-        {bookings.length === 0 ? (
-          <p className="empty">No bookings saved yet in this browser. Save one above and it appears here.</p>
-        ) : (
-          <ul className="booking-list">
-            {bookings.map((b) => (
-              <li key={b.id}>
-                <span>
-                  <strong>{b.petName}</strong> · {b.code} · {b.groomerName} · {b.dateLabel} at {b.time} ·{" "}
-                  {formatK(b.priceK)} · {b.minutes} min
-                </span>
-                <button onClick={() => setBookings((prev) => prev.filter((x) => x.id !== b.id))}>Delete</button>
-              </li>
-            ))}
-          </ul>
-        )}
       </Reveal>
+
+      <AnimatePresence>
+        {sheetOpen && lastBooking && (
+          <motion.div
+            className="confirm-sheet"
+            initial={reduced ? false : { y: -24, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -24, opacity: 0 }}
+            transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 22 }}
+            role="status"
+          >
+            <p className="tech-label">Booking saved · Demo only, in this browser</p>
+            <h3>
+              <motion.svg
+                className="confirm-check"
+                viewBox="0 0 24 24"
+                width="26"
+                height="26"
+                aria-hidden="true"
+              >
+                <motion.path
+                  d="M4 12.5l5 5L20 6.5"
+                  fill="none"
+                  stroke="#fff"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  initial={reduced ? { pathLength: 1 } : { pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={reduced ? { duration: 0 } : { duration: 0.5, delay: 0.2, ease: "easeOut" }}
+                />
+              </motion.svg>
+              {lastBooking.petName} is booked
+            </h3>
+            <p>
+              {lastBooking.groomerName} · {lastBooking.dateLabel} at {lastBooking.time} ·{" "}
+              {lastBooking.code} · {formatK(lastBooking.priceK)} · {lastBooking.minutes} min
+            </p>
+            <button className="text-btn" onClick={() => setSheetOpen(false)}>
+              Dismiss
+            </button>
+            <a className="text-btn" href="#booking">
+              Book another
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <h3>My bookings</h3>
+      {bookings.length === 0 ? (
+        <p className="empty">No bookings saved yet in this browser. Save one above and it appears here.</p>
+      ) : (
+        <ul className="booking-list">
+          {bookings.map((b) => (
+            <li key={b.id}>
+              <span>
+                <strong>{b.petName}</strong> · {b.code} · {b.groomerName} · {b.dateLabel} at {b.time} ·{" "}
+                {formatK(b.priceK)} · {b.minutes} min
+              </span>
+              <button onClick={() => setBookings((prev) => prev.filter((x) => x.id !== b.id))}>Delete</button>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

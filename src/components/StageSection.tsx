@@ -103,6 +103,7 @@ export default function StageSection(props: Props) {
               perfumeOn={addons.includes("perfume")}
               paused={effectivePaused}
               scrollT={scrollT}
+              size={size}
             />
           )}
         </div>

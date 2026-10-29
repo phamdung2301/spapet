@@ -1,4 +1,18 @@
-.reviews-section { padding: 64px 28px 80px; background: var(--ink); color: #fff; border-top: 2px solid var(--peach); }
+/* Dark ink room with warm color pools + bubble-dot texture (UI-11). */
+.reviews-section {
+  background:
+    radial-gradient(800px 400px at 20% 0%, rgba(255, 181, 158, 0.12), transparent 60%),
+    radial-gradient(700px 380px at 80% 100%, rgba(127, 168, 147, 0.14), transparent 60%),
+    linear-gradient(180deg, #322c25, #2b2620);
+  color: #fff;
+  border-color: rgba(43, 38, 32, 0.45);
+  border-top: 2px solid var(--peach);
+}
+.reviews-section::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1.5px, transparent 1.5px);
+  background-size: 26px 26px;
+}
 .reviews-section .eyebrow { color: var(--peach); }
 .strip-hint { color: rgba(255, 255, 255, 0.6); font-size: 13px; }
 .reviews-strip {
@@ -6,15 +20,20 @@
   padding-bottom: 12px; cursor: grab; scrollbar-width: thin;
 }
 .reviews-strip:active { cursor: grabbing; }
+/* Skin comes from .surface--dark/.glow; transform is owned by framer (whileHover). */
 .review {
-  flex: 0 0 320px; scroll-snap-align: start; background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 16px; padding: 20px;
-  transition: transform 0.25s ease, background 0.25s ease, flex-basis 0.25s ease; cursor: pointer;
+  flex: 0 0 320px; scroll-snap-align: start; padding: 20px; cursor: pointer;
+  transition: flex-basis 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
 }
 .review:hover, .review:focus-within, .review.expanded {
-  transform: translateY(-4px); background: rgba(255, 255, 255, 0.14); flex-basis: 400px;
+  flex-basis: 400px;
+  border-color: rgba(255, 181, 158, 0.45);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.07)) padding-box,
+    linear-gradient(135deg, rgba(255, 181, 158, 0.4), rgba(127, 168, 147, 0.25) 55%, rgba(255, 255, 255, 0.1)) border-box;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 18px 44px rgba(0, 0, 0, 0.35);
 }
-.stars { color: var(--peach); letter-spacing: 2px; margin: 0 0 10px; }
+.stars { color: var(--star); letter-spacing: 2px; margin: 0 0 10px; }
 .review-text {
   font-size: 16px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
   overflow: hidden; margin: 0 0 10px;
@@ -23,12 +42,22 @@
   -webkit-line-clamp: unset; display: block;
 }
 .review-who { font-size: 14px; }
-.review-service { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; }
+.review-service {
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7;
+  font-family: var(--font-mono);
+}
 .review-expand-hint { font-size: 12px; opacity: 0.6; margin: 10px 0 0; }
 .strip-controls { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
 .strip-controls button {
-  background: transparent; border: 1px solid rgba(255, 255, 255, 0.5); color: #fff;
+  background: transparent; border: 1px solid rgba(255, 255, 255, 0.45); color: #fff;
   border-radius: 999px; padding: 8px 14px; cursor: pointer; white-space: nowrap;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
+.strip-controls button:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.7); }
+.strip-controls button:active { transform: scale(0.97); }
 .strip-progress { flex: 1; height: 6px; background: rgba(255, 255, 255, 0.2); border-radius: 999px; overflow: hidden; }
-.strip-progress span { display: block; height: 100%; background: var(--peach); transition: width 0.2s ease; }
+.strip-progress span {
+  display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--peach), var(--sage));
+  transition: width 0.2s ease;
+}

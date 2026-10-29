@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ADDONS, QUIZ } from "../data";
 import type { QuizResult } from "../data";
 import { MaskedHeading, Reveal, RollLabel, TechLabel } from "./common";
@@ -22,6 +22,7 @@ export default function QuizSection(props: Props) {
     quizIndex, setQuizIndex, quizAnswers, setQuizAnswers,
     quizDone, setQuizDone, quizApplied, setQuizApplied, quizResult, applyQuiz,
   } = props;
+  const reduced = useReducedMotion() ?? false;
 
   const answerQuiz = (qid: string, oid: string) => {
     const next = { ...quizAnswers, [qid]: oid };
@@ -40,7 +41,7 @@ export default function QuizSection(props: Props) {
   const timelineSteps = quizResult ? quizResult.routine.split(", ") : [];
 
   return (
-    <section id="quiz" className="quiz-section">
+    <section id="quiz" className="quiz-section room section-pad">
       <Reveal>
         <TechLabel>05 · Coat-care quiz · Progress segments, animated questions, routine timeline</TechLabel>
         <h2>
@@ -48,8 +49,10 @@ export default function QuizSection(props: Props) {
             lines={[{ text: "Three questions," }, { text: "one routine — applied, not just shown", em: true }]}
           />
         </h2>
-        {!quizDone ? (
-          <div className="quiz-box">
+      </Reveal>
+      {!quizDone ? (
+        <Reveal delay={0.05}>
+          <div className="quiz-box surface">
             <div className="quiz-progress-segments" aria-label={`Question ${quizIndex + 1} of ${QUIZ.length}`}>
               {QUIZ.map((q, i) => (
                 <span
@@ -64,10 +67,10 @@ export default function QuizSection(props: Props) {
             <AnimatePresence mode="wait">
               <motion.div
                 key={quizIndex}
-                initial={{ opacity: 0, x: 32 }}
+                initial={reduced ? false : { opacity: 0, x: 32 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -32 }}
-                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                exit={reduced ? { opacity: 0 } : { opacity: 0, x: -32 }}
+                transition={reduced ? { duration: 0 } : { duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               >
                 <h3>{QUIZ[quizIndex].prompt}</h3>
                 <div className="quiz-options">
@@ -80,16 +83,18 @@ export default function QuizSection(props: Props) {
               </motion.div>
             </AnimatePresence>
           </div>
-        ) : quizResult ? (
-          <div className="quiz-result">
+        </Reveal>
+      ) : quizResult ? (
+        <Reveal delay={0.05}>
+          <div className="quiz-result surface">
             <TechLabel>Your routine · {timelineSteps.length} steps</TechLabel>
             <ol className="routine-timeline">
               {timelineSteps.map((s, i) => (
                 <motion.li
                   key={i}
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={reduced ? false : { opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 + i * 0.12, duration: 0.35 }}
+                  transition={reduced ? { duration: 0 } : { delay: 0.15 + i * 0.12, duration: 0.35 }}
                 >
                   <span className="timeline-dot">{String(i + 1).padStart(2, "0")}</span>
                   <span>{s}</span>
@@ -107,8 +112,8 @@ export default function QuizSection(props: Props) {
               Retake the quiz
             </button>
           </div>
-        ) : null}
-      </Reveal>
+        </Reveal>
+      ) : null}
     </section>
   );
 }

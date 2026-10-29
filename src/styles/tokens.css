@@ -1,0 +1,112 @@
+/* ============================================================
+   Paw & Bubbles — design tokens + global canvas (v3.2)
+   Single source of truth for color, type, depth and motion.
+   Consumed by base.css, surfaces.css and every component sheet.
+   ============================================================ */
+
+:root {
+  /* Palette — cream / peach / sage, kept but given depth */
+  --cream: #fff8f0;
+  --paper: #fdf3e3;
+  --page: #f2e5d0;
+  --ink: #2b2620;
+  --muted: #6f675c;
+  --peach: #ffb59e;
+  --peach-deep: #e88f74;
+  --sage: #7fa893;
+  --sage-dark: #5d7a6a;
+  --line: rgba(43, 38, 32, 0.16);
+  --line-strong: rgba(43, 38, 32, 0.35);
+  --star: #f5b352;
+
+  /* Type (UI-01) — all three faces ship a Vietnamese subset */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --fs-h1: clamp(2.5rem, 5.2vw, 4.25rem);
+  --fs-h2: clamp(1.75rem, 3.4vw, 2.75rem);
+  --fs-price: clamp(2.25rem, 3vw, 3rem);
+
+  /* Depth — warm-tinted shadows, never gray (UI-02) */
+  --shadow-1: 0 1px 2px rgba(63, 42, 20, 0.05), 0 6px 18px rgba(63, 42, 20, 0.08);
+  --shadow-2: 0 2px 4px rgba(63, 42, 20, 0.06), 0 18px 44px rgba(63, 42, 20, 0.15);
+  --glow-peach: 0 0 0 1px rgba(232, 143, 116, 0.45), 0 10px 30px rgba(232, 143, 116, 0.28);
+
+  /* Shape + motion */
+  --radius-room: 28px;
+  --radius-card: 18px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Film grain tile — desaturated fractal noise, no asset needed (UI-02) */
+  --noise-url: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='160'%20height='160'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.9'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3C/filter%3E%3Crect%20width='160'%20height='160'%20filter='url(%23n)'%20opacity='0.55'/%3E%3C/svg%3E");
+}
+
+/* --- Page canvas: layered warm color pools instead of flat cream (UI-02) --- */
+body {
+  background:
+    radial-gradient(1200px 700px at 85% -5%, rgba(255, 181, 158, 0.3), transparent 60%),
+    radial-gradient(1000px 600px at -10% 30%, rgba(127, 168, 147, 0.22), transparent 60%),
+    radial-gradient(900px 900px at 50% 110%, rgba(255, 196, 176, 0.18), transparent 60%),
+    var(--page);
+}
+/* Fixed attachment only where it is cheap (desktop pointers; iOS repaints badly) */
+@media (pointer: fine) {
+  body {
+    background-attachment: fixed;
+  }
+}
+/* Film grain over everything below the chrome; z-30 sits above sections and
+   the 3D canvas (z-5), below topbar (40), progress (50) and intro veil (60). */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: var(--noise-url);
+}
+
+/* --- Selection, scrollbar, focus (UI-02) --- */
+::selection {
+  background: var(--peach);
+  color: var(--ink);
+}
+html {
+  scrollbar-color: var(--sage) var(--paper);
+  scrollbar-width: thin;
+}
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--paper);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--sage);
+  border-radius: 8px;
+  border: 3px solid var(--paper);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sage-dark);
+}
+:focus-visible {
+  outline: 2px solid var(--peach-deep);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* --- Reduced motion: global kill switch for all CSS motion --- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

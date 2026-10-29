@@ -1,0 +1,454 @@
+/* ============================================================
+   Paw & Bubbles — base elements, chrome and layout (v3.2)
+   ============================================================ */
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-optical-sizing: auto;
+  line-height: 1.6;
+}
+a {
+  color: inherit;
+}
+button,
+input {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.page {
+  overflow-x: hidden;
+}
+
+/* Counting numbers never jitter (UI-09) */
+.mono,
+.code,
+.price,
+.animated-number {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Scroll progress --- */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--peach-deep), var(--peach));
+  transform-origin: left;
+  z-index: 50;
+}
+
+/* --- Topbar: warm glass, shrink-on-scroll (UI-06) --- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 28px;
+  background: rgba(255, 248, 240, 0.72);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  border-bottom: 1px solid rgba(43, 38, 32, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  transition: padding 0.3s var(--ease-out), box-shadow 0.3s ease;
+}
+.topbar.is-scrolled {
+  padding-block: 10px;
+  box-shadow: 0 1px 0 rgba(43, 38, 32, 0.06), 0 8px 24px rgba(63, 42, 20, 0.08);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  display: block;
+  flex-shrink: 0;
+}
+.brand-bubble {
+  transition: transform 0.3s var(--ease-out);
+}
+.brand strong {
+  display: block;
+  font-size: 18px;
+  line-height: 1.2;
+}
+.brand small {
+  color: var(--muted);
+  font-size: 12px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .brand:hover .brand-mark {
+    animation: brand-wobble 0.6s var(--ease-out);
+  }
+  .brand:hover .brand-bubble {
+    transform: translateY(-2px);
+  }
+}
+@keyframes brand-wobble {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(-6deg);
+  }
+  62% {
+    transform: rotate(5deg);
+  }
+}
+.topnav {
+  display: flex;
+  gap: 18px;
+  font-size: 14px;
+}
+.topnav a {
+  text-decoration: none;
+  position: relative;
+  padding: 2px 0;
+}
+.topnav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--peach-deep);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s var(--ease-out);
+}
+.topnav a:hover::after,
+.topnav a:focus-visible::after {
+  transform: scaleX(1);
+}
+.pause-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--sage-dark);
+  background: var(--sage-dark);
+  color: #fff;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 1px 2px rgba(63, 42, 20, 0.15);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+.pause-btn:hover {
+  background: #51695c;
+  border-color: #51695c;
+}
+.pause-btn:active {
+  transform: scale(0.97);
+}
+.pause-btn[aria-pressed="true"] {
+  background: var(--peach-deep);
+  border-color: var(--peach-deep);
+  color: var(--ink);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 16px rgba(232, 143, 116, 0.35);
+}
+
+/* --- Typography (UI-01): Fraunces display over Plus Jakarta Sans body --- */
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  font-weight: 640;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  margin: 0 0 12px;
+  text-wrap: balance;
+}
+h1 em,
+h2 em {
+  font-style: italic;
+  font-weight: 560;
+}
+h1 em {
+  color: var(--sage-dark);
+}
+h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: 640;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0 0 18px;
+  text-wrap: balance;
+}
+h3 {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sage-dark);
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+.mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+.code {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--peach-deep);
+  margin: 4px 0;
+}
+.price {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--fs-price);
+  font-weight: 640;
+  line-height: 1.1;
+}
+.lede {
+  max-width: 720px;
+  color: var(--muted);
+  font-size: 17px;
+}
+
+/* --- Tech labels + masked headings + rolling labels (kept from v3.1) --- */
+.tech-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+.masked-heading {
+  display: block;
+}
+.mask-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.mask-inner {
+  display: block;
+  will-change: transform;
+}
+.roll-label {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.roll-label .roll-a,
+.roll-label .roll-b {
+  display: block;
+  transition: transform 0.35s var(--ease-out);
+}
+.roll-label .roll-b {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+}
+.cta:hover .roll-label .roll-a,
+.cta:hover .roll-label .roll-b {
+  transform: translateY(-100%);
+}
+
+/* --- Layout utilities (UI-13 / UI-04) --- */
+.section-pad {
+  padding: clamp(48px, 7vw, 88px) clamp(20px, 4vw, 48px);
+}
+.room {
+  position: relative;
+  margin: 28px auto;
+  max-width: 1280px;
+  border-radius: var(--radius-room);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-1);
+}
+/* Anchor targets clear the sticky topbar */
+#stage,
+#process,
+#builder,
+#booking,
+#quiz,
+#reviews {
+  scroll-margin-top: 92px;
+}
+
+/* --- Stage zone: cream room that melts into the page color (UI-04) --- */
+.stage-section {
+  padding: 36px clamp(20px, 4vw, 48px) 60px;
+  background: linear-gradient(180deg, var(--cream) 0%, var(--cream) 78%, var(--page) 100%);
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+.stage-intro {
+  margin-bottom: 28px;
+}
+.stage-process-wrap {
+  position: relative;
+}
+.demo-note {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* --- Copy button (dark-panel default; light override in BuilderSection.css) --- */
+.copy-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  margin: 4px 0 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.copy-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.copy-btn:active {
+  transform: scale(0.97);
+}
+
+/* --- Footer + static outlined wordmark (UI-12) --- */
+footer {
+  padding: 20px clamp(20px, 4vw, 48px) 0;
+  border-top: 1px solid var(--line);
+}
+.footer-wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3rem, 11vw, 9rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: rgba(43, 38, 32, 0.14);
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  margin: 10px 0 0;
+}
+@supports (-webkit-text-stroke: 1px black) {
+  .footer-wordmark {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(43, 38, 32, 0.35);
+  }
+}
+.footer-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 0 28px;
+}
+.footer-row p {
+  margin: 0;
+}
+
+/* --- Intro veil (UI-07): branded loading curtain while the stage warms up --- */
+.intro-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(900px 600px at 80% -10%, rgba(255, 181, 158, 0.35), transparent 60%),
+    radial-gradient(700px 500px at 0% 100%, rgba(127, 168, 147, 0.25), transparent 60%),
+    var(--cream);
+}
+.intro-veil::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: var(--noise-url);
+}
+.intro-inner {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  text-align: center;
+}
+.intro-paw {
+  overflow: visible;
+}
+.intro-bubbles {
+  display: flex;
+  gap: 10px;
+  height: 26px;
+  align-items: flex-end;
+}
+.intro-bubbles span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95), var(--sage) 75%);
+  animation: intro-bubble 1.4s var(--ease-out) infinite;
+}
+.intro-bubbles span:nth-child(2) {
+  width: 9px;
+  height: 9px;
+}
+.intro-bubbles span:nth-child(3) {
+  width: 14px;
+  height: 14px;
+}
+@keyframes intro-bubble {
+  0% {
+    transform: translateY(8px) scale(0.8);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-22px) scale(1.05);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-bubbles span {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 980px) {
+  .topnav {
+    display: none;
+  }
+  .topbar {
+    padding-inline: 18px;
+  }
+}

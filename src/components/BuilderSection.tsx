@@ -1,8 +1,17 @@
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ADDONS, COAT_EXTRA_K, COAT_MINUTES, SIZE_MULT, formatK } from "../data";
 import type { AddonId, Coat, PetType } from "../data";
-import { MaskedHeading, Reveal, RollLabel, TechLabel } from "./common";
+import {
+  AnimatedNumber,
+  MaskedHeading,
+  Reveal,
+  RollLabel,
+  TechLabel,
+  fadeUpItem,
+  handleGlow,
+  staggerContainer,
+} from "./common";
 import "./BuilderSection.css";
 
 interface Calc {
@@ -46,6 +55,7 @@ function PetShape({ pet }: { pet: PetType }) {
 export default function BuilderSection(props: Props) {
   const { pet, setPet, size, setSize, coat, setCoat, addons, toggleAddon, calc, quizApplied } = props;
   const [copied, setCopied] = useState(false);
+  const reduced = useReducedMotion() ?? false;
   const baseK = Math.round((pet === "dog" ? 340 : 300) * SIZE_MULT[size]);
   const coatK = COAT_EXTRA_K[coat];
   const breakdown = [
@@ -68,7 +78,7 @@ export default function BuilderSection(props: Props) {
   };
 
   return (
-    <section id="builder" className="builder-section">
+    <section id="builder" className="builder-section room section-pad">
       <Reveal>
         <TechLabel>03 · Service builder · Every choice redraws the price line by line</TechLabel>
         <h2>
@@ -76,33 +86,58 @@ export default function BuilderSection(props: Props) {
             lines={[{ text: "Build the groom," }, { text: "watch the code follow", em: true }]}
           />
         </h2>
+      </Reveal>
+
+      {/* blur={false}: this wrapper contains the sticky summary — never leave an
+          inline filter on an ancestor of a sticky element */}
+      <Reveal delay={0.05} blur={false}>
         <div className="builder-layout">
           <div className="builder-controls">
             <fieldset>
               <legend>Pet</legend>
-              <div className="option-cards">
+              <motion.div
+                className="option-cards"
+                variants={staggerContainer}
+                initial={reduced ? false : "hidden"}
+                whileInView="show"
+                viewport={{ once: true, margin: "-40px" }}
+              >
                 {(["dog", "cat"] as PetType[]).map((p) => (
-                  <button
+                  <motion.button
                     key={p}
-                    className={`option-card ${pet === p ? "active" : ""}`}
+                    variants={fadeUpItem}
+                    whileHover={reduced ? undefined : { y: -3 }}
+                    whileTap={reduced ? undefined : { scale: 0.97 }}
+                    className={`option-card surface glow ${pet === p ? "active" : ""}`}
                     onClick={() => setPet(p)}
+                    onPointerMove={handleGlow}
                     aria-pressed={pet === p}
                   >
                     <PetShape pet={p} />
                     <strong>{p === "dog" ? "Dog" : "Cat"}</strong>
                     <small>{p === "dog" ? "Floppy ears, bigger coat" : "Pointed ears, quieter groom"}</small>
-                  </button>
+                  </motion.button>
                 ))}
-              </div>
+              </motion.div>
             </fieldset>
             <fieldset>
               <legend>Size</legend>
-              <div className="option-cards">
+              <motion.div
+                className="option-cards"
+                variants={staggerContainer}
+                initial={reduced ? false : "hidden"}
+                whileInView="show"
+                viewport={{ once: true, margin: "-40px" }}
+              >
                 {(["S", "M", "L", "XL"] as const).map((s) => (
-                  <button
+                  <motion.button
                     key={s}
-                    className={`option-card ${size === s ? "active" : ""}`}
+                    variants={fadeUpItem}
+                    whileHover={reduced ? undefined : { y: -3 }}
+                    whileTap={reduced ? undefined : { scale: 0.97 }}
+                    className={`option-card surface glow ${size === s ? "active" : ""}`}
                     onClick={() => setSize(s)}
+                    onPointerMove={handleGlow}
                     aria-pressed={size === s}
                   >
                     <span className="size-bars" aria-hidden="true">
@@ -110,18 +145,28 @@ export default function BuilderSection(props: Props) {
                     </span>
                     <strong>{s}</strong>
                     <small>{SIZE_NOTE[s]}</small>
-                  </button>
+                  </motion.button>
                 ))}
-              </div>
+              </motion.div>
             </fieldset>
             <fieldset>
               <legend>Coat — this changes the 3D coat shell</legend>
-              <div className="option-cards">
+              <motion.div
+                className="option-cards"
+                variants={staggerContainer}
+                initial={reduced ? false : "hidden"}
+                whileInView="show"
+                viewport={{ once: true, margin: "-40px" }}
+              >
                 {(["short", "long", "curly"] as Coat[]).map((c) => (
-                  <button
+                  <motion.button
                     key={c}
-                    className={`option-card ${coat === c ? "active" : ""}`}
+                    variants={fadeUpItem}
+                    whileHover={reduced ? undefined : { y: -3 }}
+                    whileTap={reduced ? undefined : { scale: 0.97 }}
+                    className={`option-card surface glow ${coat === c ? "active" : ""}`}
                     onClick={() => setCoat(c)}
+                    onPointerMove={handleGlow}
                     aria-pressed={coat === c}
                   >
                     <span className={`coat-swatch ${c}`} aria-hidden="true" />
@@ -129,9 +174,9 @@ export default function BuilderSection(props: Props) {
                     <small>
                       {c === "short" ? "Flat, easy wash" : c === "long" ? "Full length, +15 min" : "Curls, shaping, +10 min"}
                     </small>
-                  </button>
+                  </motion.button>
                 ))}
-              </div>
+              </motion.div>
             </fieldset>
             <fieldset>
               <legend>Add-ons</legend>
@@ -149,9 +194,17 @@ export default function BuilderSection(props: Props) {
               </div>
             </fieldset>
           </div>
-          <div className="builder-summary">
+          <div className="builder-summary surface">
             <p className="eyebrow">Your setup</p>
-            <p className="mono code">{calc.code}</p>
+            <motion.p
+              key={calc.code}
+              className="mono code"
+              initial={reduced ? false : { scale: 0.94, opacity: 0.5 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={reduced ? { duration: 0 } : { duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {calc.code}
+            </motion.p>
             <button className="copy-btn dark" onClick={copyCode}>
               {copied ? "Copied ✓" : "Copy code"}
             </button>
@@ -170,12 +223,16 @@ export default function BuilderSection(props: Props) {
                       <strong>{line.label}</strong>
                       <small>{line.detail}</small>
                     </span>
-                    <b>{formatK(line.value)}</b>
+                    <b>
+                      <AnimatedNumber value={line.value} suffix="k VND" />
+                    </b>
                   </motion.li>
                 ))}
               </AnimatePresence>
             </motion.ul>
-            <p className="price total-price">{formatK(calc.priceK)}</p>
+            <p className="price total-price">
+              <AnimatedNumber value={calc.priceK} suffix="k VND" />
+            </p>
             <p>About {calc.minutes} minutes in the salon.</p>
             <p className="builder-note">
               The code is the receipt for this exact combination — it travels with the booking

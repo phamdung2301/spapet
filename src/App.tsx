@@ -1,12 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, useMotionValueEvent, useScroll, useSpring, useTransform } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import BookingSection from "./components/BookingSection";
 import BuilderSection from "./components/BuilderSection";
 import ProcessSection from "./components/ProcessSection";
 import QuizSection from "./components/QuizSection";
 import ReviewsSection from "./components/ReviewsSection";
 import StageSection from "./components/StageSection";
-import { MaskedHeading } from "./components/common";
+import { BrandMark, MaskedHeading, PauseIcon, PlayIcon } from "./components/common";
 import {
   STEPS,
   calcPrice,
@@ -44,14 +51,25 @@ export default function App() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [scrollT, setScrollT] = useState(0);
   const [stageStuck, setStageStuck] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  // Intro veil (UI-07): skipped entirely when the user prefers reduced motion.
+  // `?noveil` is an e2e/screenshot escape hatch.
+  const [booted, setBooted] = useState(
+    () =>
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      window.location.search.includes("noveil"),
+  );
 
   const stageRef = useRef<HTMLDivElement>(null);
   const processRef = useRef<HTMLElement | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const lastManualRef = useRef(0);
 
-  const { scrollYProgress } = useScroll();
+  const { scrollY, scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 25 });
+
+  // Topbar compacts once the page scrolls (UI-06).
+  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 12));
 
   // Scroll-scrub for the stage zone: wrap progress drives the 3D rotation
   // (via scrollT) and the intro title drift.
@@ -122,6 +140,40 @@ export default function App() {
     }
   }, [bookings]);
 
+  // Intro veil (UI-07): lift once the page has loaded AND the brand beat has
+  // played, capped so the site is never stuck behind it. Content renders
+  // underneath from the first frame.
+  useEffect(() => {
+    if (booted) return;
+    if (userPaused) {
+      setBooted(true);
+      return;
+    }
+    let done = false;
+    let loaded = document.readyState === "complete";
+    const start = performance.now();
+    const finish = () => {
+      if (!done) {
+        done = true;
+        setBooted(true);
+      }
+    };
+    const minBeat = window.setTimeout(() => {
+      if (loaded) finish();
+    }, 1100);
+    const cap = window.setTimeout(finish, 2400);
+    const onLoad = () => {
+      loaded = true;
+      if (performance.now() - start >= 1100) finish();
+    };
+    window.addEventListener("load", onLoad);
+    return () => {
+      window.clearTimeout(minBeat);
+      window.clearTimeout(cap);
+      window.removeEventListener("load", onLoad);
+    };
+  }, [booted, userPaused]);
+
   const toggleAddon = (id: AddonId) =>
     setAddons((prev) => (prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]));
 
@@ -134,10 +186,91 @@ export default function App() {
 
   return (
     <div className="page">
+      <AnimatePresence>
+        {!booted && (
+          <motion.div
+            key="intro-veil"
+            className="intro-veil"
+            aria-hidden="true"
+            exit={{ y: "-100%" }}
+            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+          >
+            <div className="intro-inner">
+              <motion.svg
+                className="intro-paw"
+                width="72"
+                height="72"
+                viewBox="0 0 34 34"
+                fill="none"
+                aria-hidden="true"
+              >
+                <motion.circle
+                  cx="26.5"
+                  cy="7.5"
+                  r="5"
+                  stroke="#5d7a6a"
+                  strokeWidth="1.5"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.7, ease: "easeInOut" }}
+                />
+                <motion.circle
+                  cx="6.5"
+                  cy="14.5"
+                  r="3"
+                  stroke="#e88f74"
+                  strokeWidth="2"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.5, delay: 0.15, ease: "easeInOut" }}
+                />
+                <motion.circle
+                  cx="13"
+                  cy="11.5"
+                  r="3.2"
+                  stroke="#e88f74"
+                  strokeWidth="2"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.5, delay: 0.25, ease: "easeInOut" }}
+                />
+                <motion.circle
+                  cx="19.5"
+                  cy="14.5"
+                  r="3"
+                  stroke="#e88f74"
+                  strokeWidth="2"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.5, delay: 0.35, ease: "easeInOut" }}
+                />
+                <motion.ellipse
+                  cx="13"
+                  cy="23"
+                  rx="7.5"
+                  ry="6"
+                  stroke="#e88f74"
+                  strokeWidth="2"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.7, delay: 0.45, ease: "easeInOut" }}
+                />
+              </motion.svg>
+              <div className="intro-bubbles">
+                <span />
+                <span />
+                <span />
+              </div>
+              <p className="tech-label">Warming up the grooming stage…</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <motion.div className="scroll-progress" style={{ scaleX: progress }} />
-      <header className="topbar">
+      <header className={`topbar${scrolled ? " is-scrolled" : ""}`}>
         <div className="brand">
-          <span className="brand-mark">◍</span>
+          <BrandMark />
           <span>
             <strong>Paw &amp; Bubbles</strong>
             <small>Pet spa · Ho Chi Minh City</small>
@@ -152,7 +285,8 @@ export default function App() {
           <a href="#reviews">Reviews</a>
         </nav>
         <button className="pause-btn" onClick={() => setUserPaused((p) => !p)} aria-pressed={userPaused}>
-          {userPaused ? "▶ Resume motion" : "❚❚ Pause motion"}
+          {userPaused ? <PlayIcon /> : <PauseIcon />}
+          <span>{userPaused ? "Resume motion" : "Pause motion"}</span>
         </button>
       </header>
 
@@ -241,11 +375,16 @@ export default function App() {
       <ReviewsSection />
 
       <footer>
-        <p>
-          <strong>Paw &amp; Bubbles</strong> — pet spa, Ho Chi Minh City. Demo site: bookings are
-          stored only in this browser and are not real appointments.
+        <p className="footer-wordmark" aria-hidden="true">
+          Paw &amp; Bubbles
         </p>
-        <p className="mono">SPAPET v3.1 — 2026-10-27</p>
+        <div className="footer-row">
+          <p>
+            <strong>Paw &amp; Bubbles</strong> — pet spa, Ho Chi Minh City. Demo site: bookings are
+            stored only in this browser and are not real appointments.
+          </p>
+          <p className="mono">SPAPET v3.1 — 2026-10-27</p>
+        </div>
       </footer>
     </div>
   );

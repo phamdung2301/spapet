@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { RefObject } from "react";
 import { STEPS } from "../data";
 import type { StepId } from "../data";
@@ -14,6 +14,7 @@ interface Props {
 
 export default function ProcessSection({ step, setStep, onManual, processRef }: Props) {
   const currentStep = STEPS.find((s) => s.id === step) ?? STEPS[0];
+  const reduced = useReducedMotion() ?? false;
   return (
     <section id="process" className="process-section" ref={processRef}>
       <Reveal>
@@ -47,10 +48,10 @@ export default function ProcessSection({ step, setStep, onManual, processRef }: 
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep.id}
-            initial={{ opacity: 0, y: 16 }}
+            initial={reduced ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.3 }}
+            exit={reduced ? { opacity: 0 } : { opacity: 0, y: -16 }}
+            transition={reduced ? { duration: 0 } : { duration: 0.3 }}
             className="process-detail"
           >
             <div>
